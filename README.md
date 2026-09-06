@@ -115,7 +115,7 @@ Simply visit: [https://calsci-five.vercel.app/](https://calsci-five.vercel.app/)
 ### **Local Development**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/calsci-calculator.git
+   git clone https://github.com/SauravSahoo-08/calsci-calculator.git
    cd calsci-calculator
    ```
 
