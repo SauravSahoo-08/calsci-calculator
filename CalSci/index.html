@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0f'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%235a5aff' font-family='sans-serif' font-weight='bold'%3E=%3C/text%3E%3C/svg%3E" />
+  <title>CalSci</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Settings Overlay -->
+  <div id="settings-overlay" class="overlay hidden" onclick="App.Settings.close()"></div>
+
+  <!-- Settings Drawer -->
+  <aside id="settings-drawer" class="glass-drawer hidden">
+    <div class="drawer-header">
+      <h2>Settings</h2>
+      <button class="drawer-close-btn" onclick="App.Settings.close()" aria-label="Close settings">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="setting-group">
+        <label class="setting-label">Angle Units</label>
+        <div class="toggle-row">
+          <span class="toggle-text" id="angle-label">Degrees</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-angle" onchange="App.Settings.toggleAngle(this.checked)" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">Decimal Precision: <span id="precision-value">6</span></label>
+        <input type="range" id="precision-slider" min="2" max="10" value="6" class="slider" oninput="App.Settings.setPrecision(this.value)" />
+        <div class="slider-labels"><span>2</span><span>10</span></div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">Number Format</label>
+        <select id="number-format" class="glass-select" onchange="App.Settings.setNumberFormat(this.value)">
+          <option value="standard">Standard</option>
+          <option value="scientific">Scientific (1.23e+5)</option>
+          <option value="engineering">Engineering</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main App Container -->
+  <div id="app">
+    <!-- Toast Notification -->
+    <div id="error-toast" class="toast"></div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="icon-btn" onclick="App.Settings.open()" aria-label="Open settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1.08-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1.08 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.85 1.001 1.51 1.08H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/></svg>
+      </button>
+      <h1 class="app-title">CalSci</h1>
+      <div class="spacer"></div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-bar">
+      <button class="tab active" data-tab="calculator" onclick="App.switchTab('calculator')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="6" x2="16" y2="6" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="11" r="1" fill="currentColor"/><circle cx="12" cy="11" r="1" fill="currentColor"/><circle cx="16" cy="11" r="1" fill="currentColor"/><circle cx="8" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="8" cy="19" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/><circle cx="16" cy="19" r="1" fill="currentColor"/></svg>
+        <span>Calc</span>
+      </button>
+      <button class="tab" data-tab="graphing" onclick="App.switchTab('graphing')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22,6 13.5,14.5 8.5,9.5 2,16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16,6 22,6 22,12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Graph</span>
+      </button>
+      <button class="tab" data-tab="converter" onclick="App.switchTab('converter')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="17,1 21,5 17,9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11V9a4 4 0 014-4h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7,23 3,19 7,15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Convert</span>
+      </button>
+      <button class="tab" data-tab="datecalc" onclick="App.switchTab('datecalc')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.8"/><text x="12" y="17" text-anchor="middle" fill="currentColor" font-size="7" font-weight="bold">31</text></svg>
+        <span>Date</span>
+      </button>
+    </nav>
+
+    <!-- Content Panels -->
+    <main class="content">
+
+      <!-- Calculator Panel -->
+      <section id="panel-calculator" class="panel active">
+        <div class="calc-mode-toggle">
+          <button class="mode-btn active" id="mode-standard" onclick="App.Calc.setMode('standard')">Standard</button>
+          <button class="mode-btn" id="mode-scientific" onclick="App.Calc.setMode('scientific')">Scientific</button>
+        </div>
+        <div class="display-area">
+          <div class="history-line" id="calc-history"></div>
+          <div class="main-display" id="calc-display">0</div>
+        </div>
+        <!-- Scientific extra row -->
+        <div class="sci-buttons hidden" id="sci-buttons">
+          <div class="btn-row">
+            <button class="btn btn-func" onclick="App.Calc.input('sin(')">sin</button>
+            <button class="btn btn-func" onclick="App.Calc.input('cos(')">cos</button>
+            <button class="btn btn-func" onclick="App.Calc.input('tan(')">tan</button>
+            <button class="btn btn-func" onclick="App.Calc.input('log(')">log</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-func" onclick="App.Calc.input('asin(')">sin<sup>-1</sup></button>
+            <button class="btn btn-func" onclick="App.Calc.input('acos(')">cos<sup>-1</sup></button>
+            <button class="btn btn-func" onclick="App.Calc.input('atan(')">tan<sup>-1</sup></button>
+            <button class="btn btn-func" onclick="App.Calc.input('ln(')">ln</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-func" onclick="App.Calc.input('sqrt(')">&#8730;</button>
+            <button class="btn btn-func" onclick="App.Calc.input('^2')">x&sup2;</button>
+            <button class="btn btn-func" onclick="App.Calc.input('^')">x<sup>y</sup></button>
+            <button class="btn btn-func" onclick="App.Calc.input('e^')">e<sup>x</sup></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-func" onclick="App.Calc.input('!')">n!</button>
+            <button class="btn btn-func" onclick="App.Calc.input('pi')">&#960;</button>
+            <button class="btn btn-func" onclick="App.Calc.input('e')">e</button>
+            <button class="btn btn-func" onclick="App.Calc.input('(')">(</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-func" onclick="App.Calc.input(')')" style="grid-column: span 1">)</button>
+            <button class="btn btn-func" onclick="App.Calc.input('abs(')">|x|</button>
+            <button class="btn btn-func" onclick="App.Calc.input('%')">mod</button>
+            <button class="btn btn-func" onclick="App.Calc.input('cbrt(')">&#8731;</button>
+          </div>
+        </div>
+        <!-- Standard keypad -->
+        <div class="keypad">
+          <div class="btn-row">
+            <button class="btn btn-ac" onclick="App.Calc.clear()">AC</button>
+            <button class="btn btn-func2" onclick="App.Calc.toggleSign()">+/-</button>
+            <button class="btn btn-func2" onclick="App.Calc.input('%')">%</button>
+            <button class="btn btn-op" onclick="App.Calc.input('/')">&#247;</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-num" onclick="App.Calc.input('7')">7</button>
+            <button class="btn btn-num" onclick="App.Calc.input('8')">8</button>
+            <button class="btn btn-num" onclick="App.Calc.input('9')">9</button>
+            <button class="btn btn-op" onclick="App.Calc.input('*')">&#215;</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-num" onclick="App.Calc.input('4')">4</button>
+            <button class="btn btn-num" onclick="App.Calc.input('5')">5</button>
+            <button class="btn btn-num" onclick="App.Calc.input('6')">6</button>
+            <button class="btn btn-op" onclick="App.Calc.input('-')">&#8722;</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-num" onclick="App.Calc.input('1')">1</button>
+            <button class="btn btn-num" onclick="App.Calc.input('2')">2</button>
+            <button class="btn btn-num" onclick="App.Calc.input('3')">3</button>
+            <button class="btn btn-op" onclick="App.Calc.input('+')">+</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-num btn-zero" onclick="App.Calc.input('0')">0</button>
+            <button class="btn btn-num" onclick="App.Calc.input('.')">.</button>
+            <button class="btn btn-eq" onclick="App.Calc.evaluate()">=</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Graphing Panel -->
+      <section id="panel-graphing" class="panel">
+        <div class="graph-input-area">
+          <label class="graph-label">y =</label>
+          <input type="text" id="graph-equation" class="glass-input" placeholder="e.g. 2*x + 5 or x^2 - 4" />
+          <button class="btn btn-graph-plot" onclick="App.Graph.plot()">Plot</button>
+        </div>
+        <div class="graph-controls">
+          <button class="btn btn-sm" onclick="App.Graph.zoom(1)">Zoom +</button>
+          <button class="btn btn-sm" onclick="App.Graph.zoom(-1)">Zoom -</button>
+          <button class="btn btn-sm" onclick="App.Graph.reset()">Reset</button>
+          <span class="graph-range-label" id="graph-range-label">x: [-10, 10]</span>
+        </div>
+        <div class="graph-canvas-wrap">
+          <canvas id="graph-canvas"></canvas>
+        </div>
+        <div class="graph-error hidden" id="graph-error"></div>
+      </section>
+
+      <!-- Converter Panel -->
+      <section id="panel-converter" class="panel">
+        <div class="converter-category-bar">
+          <select id="conv-category" class="glass-select glass-card-sm" onchange="App.Converter.changeCategory()">
+            <option value="length">Length</option>
+            <option value="mass">Weight / Mass</option>
+            <option value="temperature">Temperature</option>
+            <option value="volume">Volume</option>
+            <option value="data">Data</option>
+            <option value="speed">Speed</option>
+          </select>
+        </div>
+        <div class="converter-body glass-card">
+          <div class="conv-field">
+            <label class="conv-label">From</label>
+            <select id="conv-from-unit" class="glass-select" onchange="App.Converter.convert()"></select>
+            <input type="number" id="conv-from-val" class="glass-input" value="1" oninput="App.Converter.convert()" />
+          </div>
+          <button class="swap-btn" onclick="App.Converter.swap()" aria-label="Swap units">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="17,1 21,5 17,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7,15 3,19 7,23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="5" x2="3" y2="5" stroke="currentColor" stroke-width="2"/><line x1="3" y1="19" x2="21" y2="19" stroke="currentColor" stroke-width="2"/></svg>
+          </button>
+          <div class="conv-field">
+            <label class="conv-label">To</label>
+            <select id="conv-to-unit" class="glass-select" onchange="App.Converter.convert()"></select>
+            <input type="text" id="conv-to-val" class="glass-input" readonly />
+          </div>
+        </div>
+      </section>
+
+      <!-- Date Calculator Panel -->
+      <section id="panel-datecalc" class="panel">
+        <div class="date-fields">
+          <div class="date-field">
+            <label class="conv-label">Date of Birth</label>
+            <input type="date" id="date-dob" class="glass-input" onchange="App.DateCalc.calculate()" />
+          </div>
+          <div class="date-field">
+            <label class="conv-label">Target Date</label>
+            <input type="date" id="date-target" class="glass-input" onchange="App.DateCalc.calculate()" />
+          </div>
+          <button class="btn btn-graph-plot" onclick="App.DateCalc.setToday()" style="margin-top:8px;">Set Today</button>
+        </div>
+        <div class="date-results hidden" id="date-results">
+          <div class="date-result-card glass-card">
+            <div class="result-title">Age</div>
+            <div class="result-value" id="date-age">--</div>
+          </div>
+          <div class="date-result-card glass-card">
+            <div class="result-title">Total Days</div>
+            <div class="result-value" id="date-total-days">--</div>
+          </div>
+          <div class="date-result-card glass-card">
+            <div class="result-title">Next Birthday</div>
+            <div class="result-value" id="date-next-bday">--</div>
+          </div>
+        </div>
+        <div class="date-error hidden" id="date-error"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
