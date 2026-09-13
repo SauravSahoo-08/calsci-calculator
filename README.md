@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-FFB627?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-7FD1AE?style=for-the-badge)
 
-**🔗 Live Demo:** [https://calsci-five.vercel.app/](https://calsci-five.vercel.app/)
+**🔗 Live Demo:** [https://calsci.vercel.app/](https://calsci-theta.vercel.app/)
 
 A modern, highly advanced scientific calculator with a stunning Neo-Brutalist Retro UI design. Built with pure vanilla JavaScript, HTML5, and CSS3 - no frameworks, just raw performance.
 
@@ -110,7 +110,7 @@ x^3-3x^2+2x-5      // Polynomial
 ## 🛠️ Installation & Usage
 
 ### **Online (Recommended)**
-Simply visit: [https://calsci-five.vercel.app/](https://calsci-five.vercel.app/)
+Simply visit: [https://calsci.vercel.app/](https://calsci-theta.vercel.app/)
 
 ### **Local Development**
 1. Clone the repository:
